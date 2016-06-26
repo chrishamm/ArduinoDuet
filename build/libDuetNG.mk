@@ -55,4 +55,4 @@ $(OBJDIR):
 clean:
 	@rm -f $(OUTPUT_DIR)/libDuetNG.a
 	@rm -rf $(OBJDIR)
-
+	$(info libDuetNG build directories removed.)

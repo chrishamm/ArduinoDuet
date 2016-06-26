@@ -55,4 +55,4 @@ $(OBJDIR):
 clean:
 	@rm -f $(OUTPUT_DIR)/libDuet.a
 	@rm -rf $(OBJDIR)
-
+	$(info libDuet build directories removed.)

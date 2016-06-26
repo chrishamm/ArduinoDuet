@@ -39,14 +39,13 @@ all: duet duetNG
 
 duet:
 	@echo "-------------------- Building libDuet --------------------"
-	$(MAKE) CC=$(CC) CXX=$(CXX) AR=$(AR) OPTIMISATION=$(OPTIMISATION) -f $(PWD)/libDuet.mk
+	@$(MAKE) --no-print-directory CC=$(CC) CXX=$(CXX) AR=$(AR) OPTIMISATION=$(OPTIMISATION) -f $(PWD)/libDuet.mk
 
 duetNG:
 	@echo "------------------- Building libDuetNG -------------------"
-	$(MAKE) CC=$(CC) CXX=$(CXX) AR=$(AR) OPTIMISATION=$(OPTIMISATION) -f $(PWD)/libDuetNG.mk
+	@$(MAKE) --no-print-directory CC=$(CC) CXX=$(CXX) AR=$(AR) OPTIMISATION=$(OPTIMISATION) -f $(PWD)/libDuetNG.mk
 
 .PHONY += clean
 clean:
-	$(MAKE) -f $(PWD)/libDuet.mk clean
-	$(MAKE) -f $(PWD)/libDuetNG.mk clean
-
+	@$(MAKE) --no-print-directory -f $(PWD)/libDuet.mk clean
+	@$(MAKE) --no-print-directory -f $(PWD)/libDuetNG.mk clean
