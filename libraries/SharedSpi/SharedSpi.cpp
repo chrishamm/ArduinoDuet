@@ -11,7 +11,7 @@
  */
 
 #include "SharedSpi.h"
-#include "Core.h"
+#include "Arduino.h"
 #include "compiler.h"
 #include "variant.h"
 

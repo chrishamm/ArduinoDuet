@@ -1,10 +1,10 @@
-# CoreNG
-New hardware abstraction layer for RepRapFirmware based on ASF 3.31
+# Arduino Duet board files
+Arduino board files for RepRap Duet and Duet WiFi electronics
 
-This is a new hardware abstraction layer for RepRapFirmware. It replaces the CoreDuet project in releases 1.11 and later of my fork of RepRapFirmware. It is based on Atmel Software Framework version 3.31 and also includes modules from the Arduino Due core.
+These files are based on dc42's CoreNG project, which was originally based on my own previous Arduino Duet board package, however this fork is designed to be easily included by the Arduino IDE. This shall allow users to build their own sketches via Arduino and to compile RepRapFirmware independently from ASF on multiple platforms (Windows, Linux and OS X).
 
-The main advantages over the previous CoreDuet project are support for more recent ATSAM processors (including the one used in the next-generation Duet), support for PWM outputs via timer/counter channels, and the use of the on-chip hardware ADC scheduler. Also the USB interface is interrupt and DMA driven instead of polled.
+In contrast to the previous Duet board package this package is based on ASF 3.31 and supports more recent ATSAM processors including the one used in the next-generation Duet platform.
 
-To build it, import the project into Eclipse Mars 2, select the desired configuration (SAM3X8E or SAM4E8E), and press Build.
+Thanks to dc42, support for PWM outputs via TCs and the use of on-chip hardware ADC schedulers has been added. Besides, the USB interface is now fully interrupt and DMA-driven instead of polled.
 
 License: GPLv3, see http://www.gnu.org/licenses/gpl-3.0.en.html.

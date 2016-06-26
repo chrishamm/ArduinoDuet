@@ -5,7 +5,7 @@
  *      Author: David
  */
 
-#include "Core.h"
+#include "Arduino.h"
 #include "AnalogIn.h"
 
 #if SAM3XA

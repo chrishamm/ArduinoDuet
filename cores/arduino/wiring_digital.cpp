@@ -16,7 +16,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include "Core.h"
+#include "Arduino.h"
 
 extern "C" void pinModeDuet(uint32_t ulPin, uint32_t ulMode, uint32_t debounceCutoff)
 {
