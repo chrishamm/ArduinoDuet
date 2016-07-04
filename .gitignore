@@ -20,7 +20,10 @@
 # Compiled Static libraries
 *.lai
 *.la
-*.a
+# Include .a files for Arduino IDE
+#*.a
+# but exclude obj directories
+obj
 *.lib
 
 # Executables
