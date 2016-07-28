@@ -14,9 +14,9 @@ INCLUDES := -I"$(BASE_PATH)/cores/arduino" -I"$(BASE_PATH)/asf" -I"$(BASE_PATH)/
 
 
 CFLAGS := -D__SAM4E8E__ -Dprintf=iprintf -DUDD_ENABLE -DUDD_NO_SLEEP_MGR
-CFLAGS += -Wall -c -std=gnu11 -mcpu=cortex-m4 -mthumb -ffunction-sections -fdata-sections -nostdlib --param max-inline-insns-single=500 -MMD -MP
+CFLAGS += -Wall -c -std=gnu11 -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -ffunction-sections -fdata-sections -nostdlib --param max-inline-insns-single=500 -MMD -MP
 CPPFLAGS := -D__SAM4E8E__ -Dprintf=iprintf -DUDD_ENABLE -DUDD_NO_SLEEP_MGR
-CPPFLAGS += -Wall -c -std=gnu++11 -mcpu=cortex-m4 -mthumb -ffunction-sections -fdata-sections -fno-threadsafe-statics -fno-rtti -fno-exceptions -nostdlib --param max-inline-insns-single=500 -MMD -MP
+CPPFLAGS += -Wall -c -std=gnu++11 -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -ffunction-sections -fdata-sections -fno-threadsafe-statics -fno-rtti -fno-exceptions -nostdlib --param max-inline-insns-single=500 -MMD -MP
 
 
 VPATH := $(BASE_PATH)/cores/arduino $(BASE_PATH)/cores/arduino/USB $(BASE_PATH)/variants/duetNG

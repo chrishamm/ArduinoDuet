@@ -36,7 +36,7 @@ duetNG.build.chip=sam4e
 duetNG.build.f_cpu=120000000UL
 duetNG.build.usb_product="Duet WiFi"
 duetNG.build.core=arduino
-duetNG.build.extra_flags=-D__SAM4E8E__ -mthumb {build.usb_flags}
+duetNG.build.extra_flags=-D__SAM4E8E__ -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=softfp {build.usb_flags}
 duetNG.build.drivers=-I{compiler.asf.path}/sam/drivers/wdt -I{compiler.asf.path}/sam/drivers/usart -I{compiler.asf.path}/sam/drivers/udp -I{compiler.asf.path}/sam/drivers/uart -I{compiler.asf.path}/sam/drivers/twi -I{compiler.asf.path}/sam/drivers/tc -I{compiler.asf.path}/sam/drivers/supc -I{compiler.asf.path}/sam/drivers/spi -I{compiler.asf.path}/sam/drivers/rtt -I{compiler.asf.path}/sam/drivers/rtc -I{compiler.asf.path}/sam/drivers/rstc -I{compiler.asf.path}/sam/drivers/pwm -I{compiler.asf.path}/sam/drivers/pmc -I{compiler.asf.path}/sam/drivers/pio -I{compiler.asf.path}/sam/drivers/pdc -I{compiler.asf.path}/sam/drivers/matrix -I{compiler.asf.path}/sam/drivers/hsmci -I{compiler.asf.path}/sam/drivers/gpbr -I{compiler.asf.path}/sam/drivers/efc -I{compiler.asf.path}/sam/drivers/dmac -I{compiler.asf.path}/sam/drivers/dacc -I{compiler.asf.path}/sam/drivers/chipid -I{compiler.asf.path}/sam/drivers/can -I{compiler.asf.path}/sam/drivers/afec
 duetNG.build.ldscript=linker_scripts/gcc/flash.ld
 duetNG.build.variant=duetNG
