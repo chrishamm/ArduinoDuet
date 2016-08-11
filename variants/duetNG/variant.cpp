@@ -257,7 +257,7 @@ void serialEventRun(void)
 // ----------------------------------------------------------------------------
 
 extern "C" void __libc_init_array(void);
-extern void UrgentInit();
+extern WEAK void UrgentInit() { }
 
 void ConfigurePin(const PinDescription& pinDesc)
 {
