@@ -10,8 +10,8 @@
  *
  */
 
-#include "SharedSpi.h"
 #include "Arduino.h"
+#include "SharedSpi.h"
 #include "compiler.h"
 #include "variant.h"
 
