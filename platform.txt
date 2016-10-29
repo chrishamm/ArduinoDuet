@@ -1,12 +1,12 @@
 
-# Arduino 1.6.10 hardware tree for the RepRap Duet platforms.
+# Arduino 1.6.12 hardware tree for the RepRap Duet platforms.
 # ------------------------------
 #
 # For more info:
 # https://github.com/arduino/Arduino/wiki/Arduino-IDE-1.5---3rd-party-Hardware-specification
 
 name=Duet platform
-version=2.0.4
+version=2.0.5
 
 # SAM compile variables
 # ----------------------
