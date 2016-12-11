@@ -35,7 +35,7 @@ AR := $(GCC_PATH)/bin/$(CROSS_COMPILE)ar
 
 
 .PHONY := all
-all: duet duetNG
+all: duet duetNG radds
 
 duet:
 	@echo "-------------------- Building libDuet --------------------"
@@ -45,7 +45,12 @@ duetNG:
 	@echo "------------------- Building libDuetNG -------------------"
 	@$(MAKE) --no-print-directory CC=$(CC) CXX=$(CXX) AR=$(AR) OPTIMISATION=$(OPTIMISATION) -f $(PWD)/libDuetNG.mk
 
+radds:
+	@echo "------------------- Building libRADDS --------------------"
+	@$(MAKE) --no-print-directory CC=$(CC) CXX=$(CXX) AR=$(AR) OPTIMISATION=$(OPTIMISATION) -f $(PWD)/libRADDS.mk
+
 .PHONY += clean
 clean:
 	@$(MAKE) --no-print-directory -f $(PWD)/libDuet.mk clean
 	@$(MAKE) --no-print-directory -f $(PWD)/libDuetNG.mk clean
+	@$(MAKE) --no-print-directory -f $(PWD)/libRADDS.mk clean
