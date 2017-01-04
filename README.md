@@ -1,15 +1,15 @@
 # Arduino Duet board files
-Arduino board files for RepRap Duet and Duet WiFi electronics
+Arduino board files for RepRap Duet, Duet WiFi, Duet Ethernet and RADDS electronics
 
-These files are based on dc42's CoreNG project, which was originally based on my own previous Arduino Duet board package, however this fork is designed to be easily included by the Arduino IDE. This shall allow users to build their own sketches via Arduino and to compile RepRapFirmware independently from ASF on multiple platforms (Windows, Linux and OS X).
+These files are based on dc42's CoreNG project, which was originally based on my own previous Arduino Duet board package. However, this fork is mainly designed to be easily included by the Arduino IDE which shall allow users to build their own independent sketches via Arduino and to compile RepRapFirmware on multiple platforms (Windows, Linux and OS X).
 
-In contrast to the previous Duet board package this package is based on ASF 3.31 and supports more recent ATSAM processors including the one used in the next-generation Duet platform.
+In contrast to the previous Duet board package this package is based on ASF 3.31 and supports more recent ATSAM processors including the one used in the next-generation Duet platforms.
 
 Thanks to dc42, support for PWM outputs via TCs and the use of on-chip hardware ADC schedulers has been added. Besides, the USB interface is now fully interrupt and DMA-driven instead of polled.
 
 # Installation
 
-To download and install this package via Arduino IDE, do the following steps:
+To download and install this package via Arduino IDE, perform the following steps:
 
 1. Start Arduino IDE
 2. Go to "File" -> "Preferences"
