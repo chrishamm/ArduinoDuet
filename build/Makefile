@@ -4,7 +4,6 @@
 # written by Christian Hammacher, 2016
 
 
-ARDUINO_VERSION := 1.6.8
 GCC_VERSION := 4.8.3-2014q1
 OPTIMISATION := -O2
 
@@ -18,7 +17,7 @@ ifeq ($(UNAME),Darwin)
   ARDUINO_PATH := $(HOME)/Library/Arduino15
 endif
 ifeq (,$(wildcard $(ARDUINO_PATH)/.))
-  $(error Arduino directory not found! Are you using Arduino $(ARDUINO_VERSION)?)
+  $(error Arduino directory not found! Have you installed it yet?)
 endif
 
 # Get GCC path
