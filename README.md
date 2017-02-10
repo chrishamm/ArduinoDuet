@@ -13,7 +13,7 @@ To download and install this package via Arduino IDE, perform the following step
 
 1. Start Arduino IDE
 2. Go to "File" -> "Preferences"
-3. Add http://reprapfirmware.org/chrishamm/package_reprap_index.json to "Additional Baords Manager URLs"
+3. Add http://chrishamm.reprapfirmware.org/package_reprap_index.json to "Additional Baords Manager URLs"
 4. Go to "Tools" -> "Board" -> "Boards Manager"
 5. Install the Arduino SAM boards package
 6. Scroll down to the last item. You should see "Duet platform" there
