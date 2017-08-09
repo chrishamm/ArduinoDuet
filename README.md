@@ -1,5 +1,6 @@
 # Arduino Duet board files
 Arduino board files for RepRap Duet, Duet WiFi, Duet Ethernet and RADDS electronics
+Support for the Alligator board is added as well, but this is not tested yet.
 
 These files are based on dc42's CoreNG project, which was originally based on my own previous Arduino Duet board package. However, this fork is mainly designed to be easily included by the Arduino IDE which shall allow users to build their own independent sketches via Arduino and to compile RepRapFirmware on multiple platforms (Windows, Linux and OS X).
 
