@@ -10,17 +10,17 @@
 #include "udi_cdc.h"		// Atmel CDC module
 #include "udc.h"
 
-#ifdef __SAM4E8E__
+#if SAM4E || SAM4S
 #include "WInterrupts.h"
 
-void core_vbus_off(void*);
+void core_vbus_off(CallbackParameter);
 #endif
 
 // SerialCDC members
 
 SerialCDC::SerialCDC() : /* _cdc_tx_buffer(), */ txBufsize(1), isConnected(false)
 {
-#ifdef __SAM4E8E__
+#if SAM4E || SAM4S
 	attachInterrupt(USB_VBUS_PIN, core_vbus_off, FALLING, nullptr);
 #endif
 }
@@ -145,9 +145,9 @@ extern "C" void core_cdc_tx_empty_notify(uint8_t port)
 	SerialUSB.cdcTxEmptyNotify();
 }
 
-#ifdef __SAM4E8E__
+#if SAM4E || SAM4S
 // On the SAM4E there is only a GPIO pin available to monitor the VBUS state
-void core_vbus_off(void*)
+void core_vbus_off(CallbackParameter)
 {
 	SerialUSB.cdcSetConnected(false);
 }

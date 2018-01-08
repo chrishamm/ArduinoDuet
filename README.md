@@ -1,4 +1,6 @@
-# Arduino Duet board files
+# Arduino Duet board files - FINAL VERSION
+NOTE: This is the last official version of ArduinoDuet. It will no longer be updated since I will contribute all my development on dc42's original firmware repostories.
+
 Arduino board files for RepRap Duet, Duet WiFi, Duet Ethernet and RADDS electronics
 Support for the Alligator board is added as well, but this is not tested yet.
 
@@ -14,7 +16,7 @@ To download and install this package via Arduino IDE, perform the following step
 
 1. Start Arduino IDE
 2. Go to "File" -> "Preferences"
-3. Add http://chrishamm.reprapfirmware.org/package_reprap_index.json to "Additional Baords Manager URLs"
+3. Add https://chrishamm.io/arduino/package_reprap_index.json to "Additional Baords Manager URLs"
 4. Go to "Tools" -> "Board" -> "Boards Manager"
 5. Install the Arduino SAM boards package
 6. Scroll down to the last item. You should see "Duet platform" there

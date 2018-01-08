@@ -52,8 +52,10 @@ void UARTClass::init(const uint32_t dwBaudRate, const uint32_t modeReg)
   // Configure PMC
   pmc_enable_periph_clk( _dwId );
 
+#if !SAME70
   // Disable PDC channel
   _pUart->UART_PTCR = UART_PTCR_RXTDIS | UART_PTCR_TXTDIS;
+#endif
 
   // Reset and disable receiver and transmitter
   _pUart->UART_CR = UART_CR_RSTRX | UART_CR_RSTTX | UART_CR_RXDIS | UART_CR_TXDIS;
@@ -65,16 +67,16 @@ void UARTClass::init(const uint32_t dwBaudRate, const uint32_t modeReg)
   const uint32_t br16 = dwBaudRate * 16;
   _pUart->UART_BRGR = (SystemCoreClock + (br16/2) - 1) / br16;
 
+  // Make sure both ring buffers are initialized back to empty.
+  _rx_buffer->_iHead = _rx_buffer->_iTail = 0;
+  _tx_buffer->_iHead = _tx_buffer->_iTail = 0;
+
   // Configure interrupts
   _pUart->UART_IDR = 0xFFFFFFFF;
   _pUart->UART_IER = UART_IER_RXRDY | UART_IER_OVRE | UART_IER_FRAME;
 
   // Enable UART interrupt in NVIC
   NVIC_EnableIRQ(_dwIrq);
-
-  // Make sure both ring buffers are initialized back to empty.
-  _rx_buffer->_iHead = _rx_buffer->_iTail = 0;
-  _tx_buffer->_iHead = _tx_buffer->_iTail = 0;
 
   // Enable receiver and transmitter
   _pUart->UART_CR = UART_CR_RXEN | UART_CR_TXEN;
@@ -154,11 +156,10 @@ void UARTClass::flush( void )
 size_t UARTClass::write( const uint8_t uc_data )
 {
   // Is the hardware currently busy?
-  if (((_pUart->UART_SR & UART_SR_TXRDY) != UART_SR_TXRDY) |
-      (_tx_buffer->_iTail != _tx_buffer->_iHead))
+  if ((_pUart->UART_SR & UART_SR_TXRDY) != UART_SR_TXRDY || _tx_buffer->_iTail != _tx_buffer->_iHead)
   {
     // If busy we buffer
-    size_t hn = (_tx_buffer->_iHead + 1) % SERIAL_BUFFER_SIZE;
+    const size_t hn = (_tx_buffer->_iHead + 1) % SERIAL_BUFFER_SIZE;
     while (_tx_buffer->_iTail == hn)
       ; // Spin locks if we're about to overwrite the buffer. This continues once the data is sent
 
@@ -195,7 +196,7 @@ size_t UARTClass::canWrite() const
 
 void UARTClass::IrqHandler()
 {
-  uint32_t status = _pUart->UART_SR;
+  const uint32_t status = _pUart->UART_SR;
 
   // Did we receive data?
   if ((status & UART_SR_RXRDY) != 0)
@@ -222,7 +223,7 @@ void UARTClass::IrqHandler()
   if ((status & (UART_SR_OVRE | UART_SR_FRAME)) != 0)
   {
     // TODO: error reporting outside ISR
-    _pUart->UART_CR |= UART_CR_RSTSTA;
+    _pUart->UART_CR = UART_CR_RSTSTA;
   }
 }
 

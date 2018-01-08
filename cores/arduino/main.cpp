@@ -18,7 +18,7 @@
 */
 
 #define ARDUINO_MAIN
-#include "Arduino.h"
+#include "Core.h"
 
 /*
  * \brief Main entry point of Arduino application
@@ -38,7 +38,6 @@ int main( void )
 	for (;;)
 	{
 		loop();
-		if (serialEventRun) serialEventRun();
 	}
 
 	return 0;

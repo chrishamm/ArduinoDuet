@@ -23,6 +23,8 @@
 #include "ecv.h"		// macros for Escher C/C++ Verifier design-by-contract annotations
 #undef yield			// eCv definition clashes with function 'yield' in wiring.c (can use _ecv_yield instead within annotations)
 
+#include "compiler.h"
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -194,6 +196,7 @@ extern const PinDescription g_APinDescription[];
 
 #include "WCharacter.h"
 #include "HardwareSerial.h"
+#include "WInterrupts.h"
 
 #endif // __cplusplus
 
@@ -203,7 +206,6 @@ extern const PinDescription g_APinDescription[];
 #include "wiring.h"
 #include "wiring_digital.h"
 #include "wiring_shift.h"
-#include "WInterrupts.h"
 #include "watchdog.h"
 #include "WMath.h"
 #include "Reset.h"

@@ -3,7 +3,7 @@
  *
  * \brief USB Device Driver for UDP. Compliant with common UDD driver.
  *
- * Copyright (c) 2012-2015 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2012-2016 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -50,7 +50,7 @@
 #include "compiler.h"
 #include "preprocessor.h"
 
-#if 0	// in RepRapFirmware we use the attachInterrupt subsystem instead
+#if 0   // in RepRapFirmware we use the attachInterrupt subsystem instead
 /* Get USB VBus pin configuration in board configuration */
 #include "conf_board.h"
 #include "board.h"
@@ -291,12 +291,63 @@ __always_inline static void io_pin_init(uint32_t pin, uint32_t flags,
 //!       RX_DATA_BK0, TXPKTRDY, RX_DATA_BK1 require wait times of 3 UDPCK clock
 //!       cycles and 5 peripheral clock cycles before accessing DPR.
 //! @{
-  //! Bitmap for all status bits in CSR that are not effected by a value 1.
+  //! Bitmap for all status bits in CSR that are not affected by a value 1.
 #define UDP_REG_NO_EFFECT_1_ALL (UDP_CSR_RX_DATA_BK0 |\
                                  UDP_CSR_RX_DATA_BK1 |\
                                  UDP_CSR_STALLSENT   |\
                                  UDP_CSR_RXSETUP     |\
                                  UDP_CSR_TXCOMP)
+
+#if 1	// DC42
+
+// Macro udp_clear_csr in the original ASF 3.3.5 code occasionally hangs in a tight loop while trying to clear the TXCOMP bit.
+// The previous ASF we used (3.3.1) executed 20 NOPs in a for-loop instead of the infinite while-loop and didn't exhibit this problem.
+// Probably this happens when we are trying to clear a status bit, we get a higher priority interrupt, and when we get back from that ISR the status bit has got set again.
+// So I have limited the loop count to 10. Also I turned each macro into an inline function.
+
+/*! Sets specified bit(s) in the UDP_CSR.
+ *  \param ep   Endpoint number.
+ *  \param bits Bitmap to set to 1.
+ */
+static inline void udp_set_csr(udd_ep_id_t ep, uint32_t bits)
+{
+	uint32_t reg = UDP->UDP_CSR[ep];
+	reg |= UDP_REG_NO_EFFECT_1_ALL;
+	reg |= (bits);
+	UDP->UDP_CSR[ep] = reg;
+	for (unsigned int i = 0; i < 10 && (UDP->UDP_CSR[ep] & bits) != bits; ++i) {}
+}
+
+/*! Clears specified bit(s) in the UDP_CSR.
+ *  \param ep   Endpoint number.
+ *  \param bits Bitmap to set to 0.
+ */
+static inline void udp_clear_csr(udd_ep_id_t ep, uint32_t bits)
+{
+	uint32_t reg = UDP->UDP_CSR[ep];
+	reg |= UDP_REG_NO_EFFECT_1_ALL;
+	reg &= ~(bits);
+	UDP->UDP_CSR[ep] = reg;
+	for (unsigned int i = 0; i < 10 && (UDP->UDP_CSR[ep] & bits) != 0; ++i) {}
+}
+
+/*! Write specified bit(s) in the UDP_CSR.
+ *  \param ep   Endpoint number.
+ *  \param bits Bitmap to write.
+ */
+static inline void udp_write_csr(udd_ep_id_t ep, uint32_t mask, uint32_t bits)
+{
+	uint32_t reg = UDP->UDP_CSR[ep];
+	reg |= UDP_REG_NO_EFFECT_1_ALL;
+	reg &= ~(mask);
+	reg |= bits & mask;
+	UDP->UDP_CSR[ep] = reg;
+	for (unsigned int i = 0; i < 10 && (UDP->UDP_CSR[ep] & bits) != bits; ++i) {}
+}
+//! @}
+
+#else
+
 /*! Sets specified bit(s) in the UDP_CSR.
  *  \param ep   Endpoint number.
  *  \param bits Bitmap to set to 1.
@@ -304,14 +355,11 @@ __always_inline static void io_pin_init(uint32_t pin, uint32_t flags,
 #define udp_set_csr(ep, bits)                                    \
 	do {                                                       \
 		volatile uint32_t reg;                             \
-		volatile uint32_t nop_count;                       \
-		reg  = UDP->UDP_CSR[ep];                           \
+		reg = UDP->UDP_CSR[ep];                           \
 		reg |= UDP_REG_NO_EFFECT_1_ALL;                    \
 		reg |= (bits);                                     \
 		UDP->UDP_CSR[ep] = reg;                            \
-		for (nop_count = 0; nop_count < 20; nop_count ++) {\
-			__NOP();                                   \
-		}                                                  \
+		while ((UDP->UDP_CSR[ep] & bits) != bits);         \
 	} while (0)
 /*! Clears specified bit(s) in the UDP_CSR.
  *  \param ep   Endpoint number.
@@ -320,14 +368,11 @@ __always_inline static void io_pin_init(uint32_t pin, uint32_t flags,
 #define udp_clear_csr(ep, bits)                                  \
 	do {                                                       \
 		volatile uint32_t reg;                             \
-		volatile uint32_t nop_count;                       \
-		reg  = UDP->UDP_CSR[ep];                           \
+		reg = UDP->UDP_CSR[ep];                           \
 		reg |= UDP_REG_NO_EFFECT_1_ALL;                    \
 		reg &= ~(bits);                                    \
 		UDP->UDP_CSR[ep] = reg;                            \
-		for (nop_count = 0; nop_count < 20; nop_count ++) {\
-			__NOP();                                   \
-		}                                                  \
+		while (UDP->UDP_CSR[ep] & bits);                   \
 	} while (0)
 /*! Write specified bit(s) in the UDP_CSR.
  *  \param ep   Endpoint number.
@@ -336,17 +381,16 @@ __always_inline static void io_pin_init(uint32_t pin, uint32_t flags,
 #define udp_write_csr(ep, mask, bits)                            \
 	do {                                                       \
 		volatile uint32_t reg;                             \
-		volatile uint32_t nop_count;                       \
 		reg  = UDP->UDP_CSR[ep];                           \
 		reg |= UDP_REG_NO_EFFECT_1_ALL;                    \
 		reg &= ~(mask);                                    \
 		reg |= bits & mask;                                \
 		UDP->UDP_CSR[ep] = reg;                            \
-		for (nop_count = 0; nop_count < 20; nop_count ++) {\
-			__NOP();                                   \
-		}                                                  \
+		while ((UDP->UDP_CSR[ep] & bits) != bits);         \
 	} while (0);
 //! @}
+
+#endif
 
 #define  udd_get_endpoint_status(ep)               (UDP->UDP_CSR[ep])
 
@@ -381,6 +425,7 @@ __always_inline static void io_pin_init(uint32_t pin, uint32_t flags,
 #define  udd_reset_endpoint(ep)                                   \
 	do {                                                      \
 		Set_bits(UDP->UDP_RST_EP, UDP_RST_EP_EP0 << (ep));\
+		while (!(UDP->UDP_RST_EP & (UDP_RST_EP_EP0 << (ep))));\
 		Clr_bits(UDP->UDP_RST_EP, UDP_RST_EP_EP0 << (ep));\
 	} while(0)
   //! tests if the selected endpoint is being reset

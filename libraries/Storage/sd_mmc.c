@@ -50,7 +50,7 @@
 #include "sd_mmc.h"
 #include "conf_sd_mmc.h"
 
-#include "Arduino.h"		// for digitalRead() and pinMode()
+#include "Core.h"		// for digitalRead() and pinMode()
 
 #ifdef FREERTOS_USED
 #include "FreeRTOS.h"
@@ -100,6 +100,9 @@ struct DriverInterface
 	bool (*wait_end_of_read_blocks)(void);
 	bool (*start_write_blocks)(const void *src, uint16_t nb_block);
 	bool (*wait_end_of_write_blocks)(void);
+#if 1	//dc42
+	uint32_t (*getInterfaceSpeed)(void);
+#endif
 	driverIdleFunc_t (*set_idle_func)(driverIdleFunc_t);
 	bool is_spi;			// true if the interface is SPI, false if it is HSMCI
 };
@@ -124,6 +127,9 @@ static const struct DriverInterface hsmciInterface = {
 	.wait_end_of_read_blocks = hsmci_wait_end_of_read_blocks,
 	.start_write_blocks = hsmci_start_write_blocks,
 	.wait_end_of_write_blocks = hsmci_wait_end_of_write_blocks,
+#if 1	//dc42
+	.getInterfaceSpeed = hsmci_get_speed,
+#endif
 	.set_idle_func = hsmci_set_idle_func,
 	.is_spi = false
 };
@@ -149,6 +155,9 @@ static const struct DriverInterface spiInterface = {
 	.wait_end_of_read_blocks = sd_mmc_spi_wait_end_of_read_blocks,
 	.start_write_blocks = sd_mmc_spi_start_write_blocks,
 	.wait_end_of_write_blocks = sd_mmc_spi_wait_end_of_write_blocks,
+#if 1	//dc42
+	.getInterfaceSpeed = spi_mmc_get_speed,
+#endif
 	.set_idle_func = sd_mmc_spi_set_idle_func,
 	.is_spi = true
 };
@@ -180,7 +189,9 @@ struct sd_mmc_card {
 	const struct DriverInterface const *iface;	// Pointer to driver interface functions
 	uint32_t clock;				//!< Card access clock
 	uint32_t capacity;			//!< Card capacity in KBytes
+#if 0	// dc42
 	Pin cd_gpio;         		//!< Card detect pin number, or -1 if none present
+#endif
 	Pin wp_gpio;				//!< Card write protection pin number, or -1 if none present
 	uint16_t rca;				//!< Relative card address
 	enum card_state state;		//!< Card state
@@ -263,26 +274,9 @@ static bool sd_mmc_mci_install_mmc(void);
 //! @{
 #define SD_MMC_DEBOUNCE_TIMEOUT   1000 // Unit ms
 
-#if 1	// timeout functions for RepRapFirmware
+#if 1	//dc42
 
-static uint32_t startTime;
-static bool timerActive = false;
-
-static inline void SD_MMC_START_TIMEOUT(void)
-{
-	startTime = millis();
-	timerActive = true;
-}
-
-static inline bool SD_MMC_IS_TIMEOUT(void)
-{
-	return !timerActive || millis() - startTime >= SD_MMC_DEBOUNCE_TIMEOUT;
-}
-
-static inline void SD_MMC_STOP_TIMEOUT(void)
-{
-	timerActive = false;
-}
+// The timeout functions are not needed for RepRapFirmware
 
 #else
 
@@ -1351,6 +1345,9 @@ static sd_mmc_err_t sd_mmc_select_slot(uint8_t slot)
 	}
 	Assert(sd_mmc_nb_block_remaining == 0);
 
+#if 1	// dc42
+	// RepRapFirmware now handles the card detect pin and debouncing, so ignore the card detect pin here
+#else
 	if (sd_mmc_cards[slot].cd_gpio != NoPin) {
 		//! Card Detect pins
 		if (digitalRead(sd_mmc_cards[slot].cd_gpio) != SD_MMC_CD_DETECT_VALUE) {
@@ -1383,7 +1380,9 @@ static sd_mmc_err_t sd_mmc_select_slot(uint8_t slot)
 			return SD_MMC_ERR_UNUSABLE;
 		}
 	}
-	else {
+	else
+#endif
+	{
 		// No pin card detection, then always try to install it
 		if ((sd_mmc_cards[slot].state == SD_MMC_CARD_STATE_NO_CARD)
 				|| (sd_mmc_cards[slot].state == SD_MMC_CARD_STATE_UNUSABLE)) {
@@ -1773,18 +1772,13 @@ static bool sd_mmc_mci_install_mmc(void)
 //-------------------------------------------------------------------
 //--------------------- PUBLIC FUNCTIONS ----------------------------
 
-void sd_mmc_init(const Pin cdPins[], const Pin wpPins[], const Pin spiCsPins[])
+void sd_mmc_init(const Pin wpPins[], const Pin spiCsPins[])
 {
 	for (size_t slot = 0; slot < SD_MMC_MEM_CNT; slot++)
 	{
 		struct sd_mmc_card *card = &sd_mmc_cards[slot];
 		card->state = SD_MMC_CARD_STATE_NO_CARD;
-		card->cd_gpio = cdPins[slot];
 		card->wp_gpio = wpPins[slot];
-		if (card->cd_gpio != NoPin)
-		{
-			pinMode(card->cd_gpio, INPUT_PULLUP);
-		}
 		if (card->wp_gpio != NoPin)
 		{
 			pinMode(card->wp_gpio, INPUT_PULLUP);
@@ -1889,17 +1883,21 @@ bool sd_mmc_is_write_protected(uint8_t slot)
 	return sd_mmc_cards[slot].wp_gpio != NoPin && digitalRead(sd_mmc_cards[slot].wp_gpio) == SD_MMC_WP_DETECT_VALUE;
 }
 
-// Get the Card Detect status, returning true if the CD pin is present and active
-bool sd_mmc_card_detected(uint8_t slot)
-{
-	return sd_mmc_cards[slot].cd_gpio != NoPin && digitalRead(sd_mmc_cards[slot].cd_gpio) == SD_MMC_CD_DETECT_VALUE;
-}
+#if 1	// dc42
 
 // Unmount the card. Must call this to force it to be re-initialised when changing card.
 void sd_mmc_unmount(uint8_t slot)
 {
 	sd_mmc_cards[slot].state = SD_MMC_CARD_STATE_NO_CARD;
 }
+
+// Get the interface speed in bytes/sec
+uint32_t sd_mmc_get_interface_speed(uint8_t slot)
+{
+	return sd_mmc_cards[slot].iface->getInterfaceSpeed();
+}
+
+#endif
 
 sd_mmc_err_t sd_mmc_init_read_blocks(uint8_t slot, uint32_t start, uint16_t nb_block)
 {

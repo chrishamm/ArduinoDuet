@@ -16,7 +16,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include "Arduino.h"
+#include "Core.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,7 +36,10 @@ uint32_t millis( void )
 
 uint64_t millis64( void )
 {
-    return g_ms_ticks;
+	const irqflags_t flags = cpu_irq_save();	// save and disable interrupts
+	const uint64_t ret = g_ms_ticks;			// take a copy with interrupts disabled to guard against rollover while we read it
+	cpu_irq_restore(flags);
+	return ret;
 }
 
 // Interrupt-compatible version of micros
@@ -77,21 +80,6 @@ void delay( uint32_t ms )
 		} while ((uint32_t)g_ms_ticks - start < ms);
     }
 }
-
-#if defined ( __ICCARM__ ) /* IAR Ewarm 5.41+ */
-extern signed int putchar( signed int c ) ;
-/**
- * \brief
- *
- * \param c  Character to output.
- *
- * \return The character that was output.
- */
-extern WEAK signed int putchar( signed int c )
-{
-    return c ;
-}
-#endif /* __ICCARM__ */
 
 #ifdef __cplusplus
 }

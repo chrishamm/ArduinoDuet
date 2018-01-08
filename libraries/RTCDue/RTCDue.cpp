@@ -4,8 +4,7 @@
  */
 
 #include "RTCDue.h"
-#include "rtc.h"
-
+#include "sam/drivers/rtc/rtc.h"
 #include <cstring>
 
 void RTCDue::Init()
@@ -51,19 +50,15 @@ bool RTCDue::SetDateTime(time_t datetime)
 // This function has been copied from the ASF RTC example
 static uint32_t calculate_week(uint32_t ul_year, uint32_t ul_month, uint32_t ul_day)
 {
-	uint32_t ul_week;
-
-	if (ul_month == 1 || ul_month == 2) {
+	if (ul_month == 1 || ul_month == 2)
+	{
 		ul_month += 12;
 		--ul_year;
 	}
 
-	ul_week = (ul_day + 2 * ul_month + 3 * (ul_month + 1) / 5 + ul_year +
-			ul_year / 4 - ul_year / 100 + ul_year / 400) % 7;
+	const uint32_t ul_week = (ul_day + 2 * ul_month + 3 * (ul_month + 1) / 5 + ul_year + ul_year / 4 - ul_year / 100 + ul_year / 400) % 7;
 
-	++ul_week;
-
-	return ul_week;
+	return ul_week + 1;
 }
 
 bool RTCDue::SetDate(time_t date)
