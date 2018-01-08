@@ -9,7 +9,7 @@ OUTPUT_DIR := $(BASE_PATH)/variants/duetNG
 OBJDIR := $(OUTPUT_DIR)/obj
 
 
-DRIVERS := wdt usart udp uart twi tc supc spi rtt rtc rstc pwm pmc pio pdc matrix hsmci gpbr efc dmac dacc cmcc chipid cmcc can afec
+DRIVERS := wdt rswdt usart udp uart twi tc supc spi rtt rtc rstc pwm pmc pio pdc matrix hsmci gpbr efc dmac dacc cmcc chipid cmcc can afec
 INCLUDES := -I"$(BASE_PATH)/cores/arduino" -I"$(BASE_PATH)/asf" -I"$(BASE_PATH)/asf/sam/utils" -I"$(BASE_PATH)/asf/sam/utils/header_files" -I"$(BASE_PATH)/asf/sam/utils/preprocessor" -I"$(BASE_PATH)/asf/sam/utils/cmsis/sam4e/include" -I"$(BASE_PATH)/asf/sam/drivers" $(foreach driver,$(DRIVERS),-I"$(BASE_PATH)/asf/sam/drivers/$(driver)") -I"$(BASE_PATH)/asf/sam/services/flash_efc" -I"$(BASE_PATH)/asf/common/utils" -I"$(BASE_PATH)/asf/common/services/clock" -I"$(BASE_PATH)/asf/common/services/ioport" -I"$(BASE_PATH)/asf/common/services/sleepmgr" -I"$(BASE_PATH)/asf/common/services/usb" -I"$(BASE_PATH)/asf/common/services/usb/udc" -I"$(BASE_PATH)/asf/common/services/usb/class/cdc" -I"$(BASE_PATH)/asf/common/services/usb/class/cdc/device" -I"$(BASE_PATH)/asf/thirdparty/CMSIS/Include" -I"$(BASE_PATH)/variants/duetNG"
 
 
